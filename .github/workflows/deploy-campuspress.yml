@@ -1,0 +1,29 @@
+name: Deploy to CampusPress
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "content/**"
+      - "campuspress.json"
+      - "scripts/deploy-campuspress.mjs"
+  workflow_dispatch:
+
+concurrency:
+  group: campuspress-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Push page content to CampusPress
+        env:
+          CAMPUSPRESS_BASE_URL: ${{ vars.CAMPUSPRESS_BASE_URL }}
+          CAMPUSPRESS_USERNAME: ${{ secrets.CAMPUSPRESS_USERNAME }}
+          CAMPUSPRESS_APP_PASSWORD: ${{ secrets.CAMPUSPRESS_APP_PASSWORD }}
+        run: npm run deploy:wp

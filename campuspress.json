@@ -1,0 +1,37 @@
+{
+  "baseUrl": "https://blog.umd.edu/electricboat",
+  "pages": [
+    {
+      "source": "content/home.html",
+      "route": "/",
+      "title": "Home",
+      "nav": "Home",
+      "description": "The Terrapin Works Electric Boat Team builds electric marine propulsion at the University of Maryland.",
+      "wordpressId": null
+    },
+    {
+      "source": "content/team-overview.html",
+      "route": "/team-overview/",
+      "title": "Team",
+      "nav": "Team",
+      "description": "Who we are, who leads the team, and the competition we are building for.",
+      "wordpressId": null
+    },
+    {
+      "source": "content/sponsors.html",
+      "route": "/sponsors/",
+      "title": "Sponsors",
+      "nav": "Sponsors",
+      "description": "Sponsorship tiers and where the money goes.",
+      "wordpressId": null
+    },
+    {
+      "source": "content/about.html",
+      "route": "/about/",
+      "title": "About",
+      "nav": "About",
+      "description": "About Terrapin Works and the Electric Boat Team.",
+      "wordpressId": null
+    }
+  ]
+}

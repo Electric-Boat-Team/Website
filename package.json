@@ -1,0 +1,14 @@
+{
+  "name": "electric-boat-website",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "description": "Content, static site build, and CampusPress deploy for the Terrapin Works Electric Boat Team.",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build": "node scripts/build-site.mjs",
+    "deploy:wp": "node scripts/deploy-campuspress.mjs",
+    "deploy:wp:dry": "node scripts/deploy-campuspress.mjs --dry-run",
+    "preview": "npm run build && npx --yes serve dist"
+  }
+}
