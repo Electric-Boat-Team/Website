@@ -1,23 +1,21 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import { loadPages } from "./pages.mjs";
 
 const root = process.cwd();
-const config = JSON.parse(await readFile(path.join(root, "campuspress.json"), "utf8"));
+const { config, pages } = await loadPages(root);
 
 const baseUrl = (process.env.CAMPUSPRESS_BASE_URL || config.baseUrl || "").replace(/\/+$/, "");
 const username = process.env.CAMPUSPRESS_USERNAME;
 const appPassword = process.env.CAMPUSPRESS_APP_PASSWORD;
 const dryRun = process.env.DRY_RUN === "1" || process.argv.includes("--dry-run");
-const draftOnly = process.env.CAMPUSPRESS_DRAFT_ONLY !== "false";
 
 if (!baseUrl) {
   throw new Error("Set CAMPUSPRESS_BASE_URL or add baseUrl to campuspress.json");
 }
 
-const pages = config.pages.filter((page) => page.wordpressId);
-
 if (pages.length === 0) {
-  console.log("No pages have a wordpressId set; nothing to deploy.");
+  console.log("No HTML pages found in content/; nothing to deploy.");
   process.exit(0);
 }
 
@@ -25,43 +23,58 @@ if (!dryRun && (!username || !appPassword)) {
   throw new Error("Set CAMPUSPRESS_USERNAME and CAMPUSPRESS_APP_PASSWORD (application password)");
 }
 
-const auth = "Basic " + Buffer.from(`${username}:${appPassword}`).toString("base64");
+const auth = dryRun ? "" : "Basic " + Buffer.from(`${username}:${appPassword}`).toString("base64");
+const endpoint = `${baseUrl}/wp-json/wp/v2/pages`;
 
 for (const page of pages) {
   const content = await readFile(path.join(root, page.source), "utf8");
-  const url = `${baseUrl}/wp-json/wp/v2/pages/${page.wordpressId}`;
+  const slug = `draft-${page.slug}`;
 
   if (dryRun) {
-    console.log(`[dry-run] POST ${url}  <-  ${page.source} (${content.length} bytes, draft-only: ${draftOnly})`);
+    console.log(`[dry-run] sync ${slug}  <-  ${page.source} (${content.length} bytes, draft only)`);
     continue;
   }
 
-  if (draftOnly) {
-    const current = await fetch(`${url}?context=edit`, {
+  const lookup = await fetch(`${endpoint}?context=edit&status=any&slug=${encodeURIComponent(slug)}`, {
+    headers: { Authorization: auth },
+  });
+  if (!lookup.ok) {
+    throw new Error(`Cannot look up ${slug}: ${lookup.status} ${lookup.statusText}`);
+  }
+  const matches = await lookup.json();
+  if (!Array.isArray(matches) || matches.length > 1 || matches.some((item) => item.slug !== slug)) {
+    throw new Error(`Ambiguous WordPress result for ${slug}; refusing to write`);
+  }
+  const existing = matches[0];
+  if (existing && existing.status !== "draft") {
+    throw new Error(`Refusing to update ${slug}: WordPress reports status ${existing.status}`);
+  }
+  if (existing) {
+    const current = await fetch(`${endpoint}/${existing.id}?context=edit`, {
       headers: { Authorization: auth },
     });
     if (!current.ok) {
-      throw new Error(`Cannot verify page ${page.wordpressId} is a draft: ${current.status} ${current.statusText}`);
+      throw new Error(`Cannot verify ${slug}: ${current.status} ${current.statusText}`);
     }
-    const existing = await current.json();
-    if (existing.id !== page.wordpressId || existing.status !== "draft") {
-      throw new Error(`Refusing to update page ${page.wordpressId}: WordPress reports status ${existing.status} for ID ${existing.id}`);
+    const pageNow = await current.json();
+    if (pageNow.id !== existing.id || pageNow.slug !== slug || pageNow.status !== "draft") {
+      throw new Error(`Refusing to update ${slug}: it is no longer the expected draft`);
     }
   }
 
-  const res = await fetch(url, {
+  const res = await fetch(existing ? `${endpoint}/${existing.id}` : endpoint, {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: auth },
-    body: JSON.stringify({ content }),
+    body: JSON.stringify(existing ? { content } : { content, slug, title: page.title, status: "draft" }),
   });
 
   if (!res.ok) {
-    console.error(`FAILED ${page.source} -> page ${page.wordpressId}: ${res.status} ${res.statusText}`);
-    console.error(await res.text());
-    process.exitCode = 1;
-    continue;
+    throw new Error(`Failed to sync ${slug}: ${res.status} ${res.statusText}`);
   }
 
   const json = await res.json();
-  console.log(`updated page ${page.wordpressId} from ${page.source} (modified ${json.modified})`);
+  if (json.status !== "draft" || json.slug !== slug) {
+    throw new Error(`WordPress did not preserve draft status and slug for ${slug} (ID ${json.id})`);
+  }
+  console.log(`${existing ? "updated" : "created"} draft ${slug} (ID ${json.id}) from ${page.source}`);
 }
