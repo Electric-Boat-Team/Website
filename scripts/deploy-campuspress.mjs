@@ -62,6 +62,7 @@ for (const page of pages) {
     }
   }
 
+  // WordPress does not make the draft check and content update atomic.
   const res = await fetch(existing ? `${endpoint}/${existing.id}` : endpoint, {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: auth },

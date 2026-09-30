@@ -54,4 +54,6 @@ npm run deploy:wp        # push content to WordPress
 npm run deploy:wp:dry    # dry run, no requests
 ```
 
-It uses the `baseUrl` in `campuspress.json` (or an optional `CAMPUSPRESS_BASE_URL` repository variable) and the `CAMPUSPRESS_USERNAME` / `CAMPUSPRESS_APP_PASSWORD` repository secrets. For each HTML fragment it finds or creates a draft with slug `draft-<slug>`. It refuses to modify non-drafts or ambiguous slug matches. Existing drafts get content-only updates; new drafts get the derived title and slug. This does not publish pages or touch the earlier test page (ID 54). Use `npm run deploy:wp:dry` to list the slugs without writing to WordPress.
+It uses the `baseUrl` in `campuspress.json` (or an optional `CAMPUSPRESS_BASE_URL` repository variable) and the `CAMPUSPRESS_USERNAME` / `CAMPUSPRESS_APP_PASSWORD` repository secrets. For each HTML fragment it finds or creates a draft with slug `draft-<slug>`. It refuses non-drafts or ambiguous slug matches at lookup time. Existing drafts get content-only updates; new drafts get the derived title and slug. It does not publish pages. Use `npm run deploy:wp:dry` to list the slugs without writing to WordPress.
+
+The draft check and update are separate WordPress API requests. If someone publishes a draft between them, the update could change its newly published content. Avoid publishing these placeholder pages while a manual sync is running; this is not an atomic draft-only guarantee.
