@@ -8,6 +8,7 @@ const baseUrl = (process.env.CAMPUSPRESS_BASE_URL || config.baseUrl || "").repla
 const username = process.env.CAMPUSPRESS_USERNAME;
 const appPassword = process.env.CAMPUSPRESS_APP_PASSWORD;
 const dryRun = process.env.DRY_RUN === "1" || process.argv.includes("--dry-run");
+const draftOnly = process.env.CAMPUSPRESS_DRAFT_ONLY !== "false";
 
 if (!baseUrl) {
   throw new Error("Set CAMPUSPRESS_BASE_URL or add baseUrl to campuspress.json");
@@ -31,18 +32,27 @@ for (const page of pages) {
   const url = `${baseUrl}/wp-json/wp/v2/pages/${page.wordpressId}`;
 
   if (dryRun) {
-    console.log(`[dry-run] POST ${url}  <-  ${page.source} (${content.length} bytes)`);
+    console.log(`[dry-run] POST ${url}  <-  ${page.source} (${content.length} bytes, draft-only: ${draftOnly})`);
     continue;
+  }
+
+  if (draftOnly) {
+    const current = await fetch(`${url}?context=edit`, {
+      headers: { Authorization: auth },
+    });
+    if (!current.ok) {
+      throw new Error(`Cannot verify page ${page.wordpressId} is a draft: ${current.status} ${current.statusText}`);
+    }
+    const existing = await current.json();
+    if (existing.id !== page.wordpressId || existing.status !== "draft") {
+      throw new Error(`Refusing to update page ${page.wordpressId}: it is not a draft`);
+    }
   }
 
   const res = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: auth },
-    body: JSON.stringify({
-      content,
-      title: page.title,
-      status: page.status ?? "publish",
-    }),
+    body: JSON.stringify({ content }),
   });
 
   if (!res.ok) {
