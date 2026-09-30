@@ -9,6 +9,7 @@
   },
   "scripts": {
     "build": "node scripts/build-site.mjs",
+    "test": "node --test",
     "deploy:wp": "node scripts/deploy-campuspress.mjs",
     "deploy:wp:dry": "node scripts/deploy-campuspress.mjs --dry-run",
     "preview": "npm run build && npx --yes serve dist"

@@ -24,5 +24,4 @@ jobs:
           CAMPUSPRESS_BASE_URL: ${{ vars.CAMPUSPRESS_BASE_URL }}
           CAMPUSPRESS_USERNAME: ${{ secrets.CAMPUSPRESS_USERNAME }}
           CAMPUSPRESS_APP_PASSWORD: ${{ secrets.CAMPUSPRESS_APP_PASSWORD }}
-          CAMPUSPRESS_DRAFT_ONLY: "true"
         run: npm run deploy:wp

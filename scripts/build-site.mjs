@@ -1,11 +1,12 @@
 import { readFile, writeFile, mkdir, cp, rm } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import path from "node:path";
+import { loadPages } from "./pages.mjs";
 
 const root = process.cwd();
 const outDir = path.join(root, "dist");
 
-const config = JSON.parse(await readFile(path.join(root, "campuspress.json"), "utf8"));
+const { pages } = await loadPages(root);
 const template = await readFile(path.join(root, "site/template.html"), "utf8");
 
 const escapeHtml = (value) =>
@@ -33,7 +34,7 @@ if (existsSync(outDir)) {
   await rm(outDir, { recursive: true, force: true });
 }
 
-for (const page of config.pages) {
+for (const page of pages) {
   const fragment = await readFile(path.join(root, page.source), "utf8");
   const prefix = relPrefix(page.route);
 
@@ -41,7 +42,7 @@ for (const page of config.pages) {
     .replaceAll("{{title}}", escapeHtml(page.title))
     .replaceAll("{{description}}", escapeHtml(page.description ?? ""))
     .replaceAll("{{base}}", prefix)
-    .replaceAll("{{nav}}", renderNav(config.pages, page, prefix))
+    .replaceAll("{{nav}}", renderNav(pages, page, prefix))
     .replaceAll("{{content}}", fragment)
     .replaceAll("{{year}}", String(new Date().getFullYear()));
 
