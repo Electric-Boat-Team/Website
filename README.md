@@ -54,4 +54,4 @@ npm run deploy:wp        # push content to WordPress
 npm run deploy:wp:dry    # dry run, no requests
 ```
 
-It uses the `baseUrl` in `campuspress.json` (or an optional `CAMPUSPRESS_BASE_URL` repository variable) and the `CAMPUSPRESS_USERNAME` / `CAMPUSPRESS_APP_PASSWORD` repository secrets. Only Team is mapped to the draft test page (ID 41); unmapped pages are skipped. Before updating, the script verifies that each mapped page is still a draft, and it changes only the content, not the title or status. Publishing later requires deliberately changing `CAMPUSPRESS_DRAFT_ONLY` in the workflow to `false` and mapping the live page IDs.
+It uses the `baseUrl` in `campuspress.json` (or an optional `CAMPUSPRESS_BASE_URL` repository variable) and the `CAMPUSPRESS_USERNAME` / `CAMPUSPRESS_APP_PASSWORD` repository secrets. Only Team is mapped to the draft test page (ID 54); unmapped pages are skipped. Before updating, the script verifies that each mapped page is still a draft, and it changes only the content, not the title or status. Publishing later requires deliberately changing `CAMPUSPRESS_DRAFT_ONLY` in the workflow to `false` and mapping the live page IDs.
