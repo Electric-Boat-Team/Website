@@ -47,11 +47,11 @@ npm run preview    # build and serve dist/ locally
 
 `wrangler preview` needs the empty `[previews]` block in `wrangler.toml` and `wrangler >= 4.135.0` (pinned in `package.json`).
 
-**CampusPress** deploys on push to `main` via `.github/workflows/deploy-campuspress.yml`:
+**CampusPress** is manual-only. After the workflow is on `main`, Victor-Casado can open the repo's **Actions → Deploy to CampusPress → Run workflow**, select `main`, and run it. The workflow skips the deploy job for other users' dispatches or reruns. GitHub does not hide the Run workflow button from other collaborators with write access.
 
 ```bash
 npm run deploy:wp        # push content to WordPress
 npm run deploy:wp:dry    # dry run, no requests
 ```
 
-It needs `CAMPUSPRESS_BASE_URL` (repository variable) and `CAMPUSPRESS_USERNAME` / `CAMPUSPRESS_APP_PASSWORD` (secrets). Pages are skipped until their `wordpressId` is filled in.
+It uses the `baseUrl` in `campuspress.json` (or an optional `CAMPUSPRESS_BASE_URL` repository variable) and the `CAMPUSPRESS_USERNAME` / `CAMPUSPRESS_APP_PASSWORD` repository secrets. Only Team is mapped to the draft test page (ID 41); unmapped pages are skipped. Before updating, the script verifies that each mapped page is still a draft, and it changes only the content, not the title or status. Publishing later requires deliberately changing `CAMPUSPRESS_DRAFT_ONLY` in the workflow to `false` and mapping the live page IDs.

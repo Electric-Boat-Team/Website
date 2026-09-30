@@ -1,13 +1,10 @@
 name: Deploy to CampusPress
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "content/**"
-      - "campuspress.json"
-      - "scripts/deploy-campuspress.mjs"
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 concurrency:
   group: campuspress-deploy
@@ -15,6 +12,7 @@ concurrency:
 
 jobs:
   deploy:
+    if: ${{ github.ref == 'refs/heads/main' && github.actor == 'Victor-Casado' && github.triggering_actor == 'Victor-Casado' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,4 +24,5 @@ jobs:
           CAMPUSPRESS_BASE_URL: ${{ vars.CAMPUSPRESS_BASE_URL }}
           CAMPUSPRESS_USERNAME: ${{ secrets.CAMPUSPRESS_USERNAME }}
           CAMPUSPRESS_APP_PASSWORD: ${{ secrets.CAMPUSPRESS_APP_PASSWORD }}
+          CAMPUSPRESS_DRAFT_ONLY: "true"
         run: npm run deploy:wp
