@@ -45,7 +45,7 @@ for (const page of pages) {
     }
     const existing = await current.json();
     if (existing.id !== page.wordpressId || existing.status !== "draft") {
-      throw new Error(`Refusing to update page ${page.wordpressId}: it is not a draft`);
+      throw new Error(`Refusing to update page ${page.wordpressId}: WordPress reports status ${existing.status} for ID ${existing.id}`);
     }
   }
 
