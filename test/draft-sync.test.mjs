@@ -78,10 +78,10 @@ test("creates a draft, updates only draft content, and refuses published pages",
     assert.equal((await run()).code, 0);
     assert.deepEqual(writes[0], {
       url: "/wp-json/wp/v2/pages",
-      data: { content: "<p>Home</p>", slug: "draft-home", title: "Home", status: "draft" },
+      data: { content: "<p>Home</p>", slug: "draft-home", title: "\u00a0", status: "draft" },
     });
     assert.equal((await run()).code, 0);
-    assert.deepEqual(writes[1], { url: "/wp-json/wp/v2/pages/54", data: { content: "<p>Home</p>" } });
+    assert.deepEqual(writes[1], { url: "/wp-json/wp/v2/pages/54", data: { content: "<p>Home</p>", title: "\u00a0" } });
 
     page.status = "publish";
     const refused = await run();

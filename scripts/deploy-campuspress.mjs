@@ -63,10 +63,12 @@ for (const page of pages) {
   }
 
   // WordPress does not make the draft check and content update atomic.
+  const pageTitle = "\u00a0";
+
   const res = await fetch(existing ? `${endpoint}/${existing.id}` : endpoint, {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: auth },
-    body: JSON.stringify(existing ? { content } : { content, slug, title: page.title, status: "draft" }),
+    body: JSON.stringify(existing ? { content, title: pageTitle } : { content, slug, title: pageTitle, status: "draft" }),
   });
 
   if (!res.ok) {
