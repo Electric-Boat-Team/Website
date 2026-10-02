@@ -13,12 +13,9 @@ This is a Cloudflare Worker serving static assets. It is **not** GitHub Pages; t
 
 ```
 content/                 HTML fragments, shared by both deployments
-site/template.html       page shell (head, nav, footer)
-site/styles.css          static-site styling
-public/assets/           images (logo.svg, etc.)
-scripts/build-site.mjs   wraps content/ -> dist/
+scripts/build-site.mjs   inserts content/ into the public CampusPress theme -> dist/
 scripts/deploy-campuspress.mjs  pushes content/ to the WordPress REST API
-campuspress.json         CampusPress URL and optional page titles/nav metadata
+campuspress.json         CampusPress URL and optional page title overrides
 wrangler.toml            Cloudflare Worker config
 ```
 
@@ -26,9 +23,9 @@ wrangler.toml            Cloudflare Worker config
 
 Edit the files in `content/`. They are Gutenberg block markup and plain HTML at once — the `<!-- wp:... -->` markers are comments to a browser, so the same file feeds both Cloudflare and CampusPress.
 
-Stick to native blocks (groups, headings, paragraphs, lists, tables, images) so the content renders on both. The WordPress theme controls its own styling, so the exact look differs between the two.
+Stick to native blocks (groups, headings, paragraphs, lists, tables, images) so the content renders on both. The Cloudflare build fetches the published standard-page shell from `electricboat.umd.edu/join-the-team/` and uses its public theme CSS, header, sidebar, footer, and UMD banner script. The build fails if that page is unavailable or its required shell markers or UMD script are missing; other theme changes may still affect the preview. WordPress-only features such as its editor bar and dynamic widgets may also differ.
 
-Add a lowercase, hyphenated `content/<slug>.html` file. The build automatically serves it at `/<slug>/` (except `home.html`, served at `/`). The manual CampusPress sync creates or updates a draft at `draft-<slug>`. Add optional title, nav label, or description under `pageMetadata` in `campuspress.json`; there are no WordPress IDs to maintain. Removing a source file does not delete any WordPress page.
+Add a lowercase, hyphenated `content/<slug>.html` file. The build automatically serves it at `/<slug>/` (except `home.html`, served at `/`). The manual CampusPress sync creates or updates a draft at `draft-<slug>`. Add an optional title override under `pageMetadata` in `campuspress.json`; there are no WordPress IDs to maintain. Removing a source file does not delete any WordPress page.
 
 ## Build
 
@@ -43,7 +40,7 @@ npm run preview    # build and serve dist/ locally
 
 - Production branch: `main` → `npx wrangler deploy`
 - All other branches → `npx wrangler preview`, and the preview URL is posted on the PR
-- Build command: `npm run build`, root directory `/`
+- Build command: `npm run build`, root directory `/` (requires access to `electricboat.umd.edu`)
 
 `wrangler preview` needs the empty `[previews]` block in `wrangler.toml` and `wrangler >= 4.135.0` (pinned in `package.json`).
 
