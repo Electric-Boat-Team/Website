@@ -25,7 +25,7 @@ const images = [
   { file: "hull-on-shore.jpg", slug: "twebt-hull-on-shore", alt: "Catamaran hull resting on shore" },
 ];
 
-for (const image of images) {
+for (const image of process.env.TEMPLATES_ONLY ? [] : images) {
   const matches = await jsonRequest(`/media?context=edit&slug=${image.slug}`);
   if (!Array.isArray(matches) || matches.length > 1) throw new Error(`Ambiguous media match for ${image.slug}`);
   let media = matches[0];
@@ -50,10 +50,15 @@ for (const image of images) {
 for (const id of [57, 58, 59, 60]) {
   const page = await jsonRequest(`/pages/${id}?context=edit`);
   if (page.status !== "draft") throw new Error(`Page ${id} is not a draft; template unchanged`);
+  if (page.template === "page-full-width.php") {
+    console.log(`Page ${id}: already full-width`);
+    continue;
+  }
   await jsonRequest(`/pages/${id}`, "POST", { template: "page-full-width.php" });
   const updated = await jsonRequest(`/pages/${id}?context=edit`);
   if (updated.template !== "page-full-width.php" || updated.status !== "draft") {
     throw new Error(`Page ${id} did not keep the full-width draft template`);
   }
   console.log(`Page ${id}: full-width template confirmed`);
+  await new Promise((resolve) => setTimeout(resolve, 2000));
 }

@@ -38,4 +38,5 @@ jobs:
         env:
           CAMPUSPRESS_USERNAME: ${{ secrets.CAMPUSPRESS_USERNAME }}
           CAMPUSPRESS_APP_PASSWORD: ${{ secrets.CAMPUSPRESS_APP_PASSWORD }}
+          TEMPLATES_ONLY: "true"
         run: node scripts/setup-campuspress-media.mjs
