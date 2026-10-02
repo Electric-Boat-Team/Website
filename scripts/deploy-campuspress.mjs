@@ -62,6 +62,10 @@ for (const page of pages) {
     }
   }
 
+  // Throttle to avoid WordPress API rate limits
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+  await wait(2500);
+
   // WordPress does not make the draft check and content update atomic.
   const pageTitle = "\u00a0";
 
