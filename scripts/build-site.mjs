@@ -53,7 +53,6 @@ for (const page of pages) {
     .replace(/ current_page_item/g, "")
     .replace(/ aria-current="page"/g, "");
   const article = `<article class="page type-page status-draft hentry">
-    <header class="entry-header"><h1 class="entry-title">${escapeHtml(page.title)}</h1></header>
     <div class="entry-content">${fragment}</div>
   </article>`;
   const html = (head + article + theme.slice(articleEnd, shellEnd) + `\n${umdHeaderScript}\n</body>\n</html>\n`)
