@@ -26,18 +26,6 @@ jobs:
         run: node scripts/upload-boat-images.mjs
 
   deploy:
-    if: ${{ github.ref == 'refs/heads/feat/team-content-update' && github.actor == 'Victor-Casado' }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - name: Upload boat images to CampusPress
-        env:
-          CAMPUSPRESS_USERNAME: ${{ secrets.CAMPUSPRESS_USERNAME }}
-          CAMPUSPRESS_APP_PASSWORD: ${{ secrets.CAMPUSPRESS_APP_PASSWORD }}
-        run: node scripts/upload-boat-images.mjs
     if: ${{ github.ref == 'refs/heads/main' && github.actor == 'Victor-Casado' && github.triggering_actor == 'Victor-Casado' }}
     runs-on: ubuntu-latest
     steps:
