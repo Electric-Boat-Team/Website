@@ -4,14 +4,9 @@ import path from "node:path";
 export async function loadPages(root) {
   const config = JSON.parse(await readFile(path.join(root, "campuspress.json"), "utf8"));
   const metadata = config.pageMetadata ?? {};
-  const order = Object.keys(metadata);
   const files = (await readdir(path.join(root, "content")))
     .filter((file) => file.endsWith(".html"))
-    .sort((a, b) => {
-      const first = order.indexOf(path.parse(a).name);
-      const second = order.indexOf(path.parse(b).name);
-      return (first < 0 ? Infinity : first) - (second < 0 ? Infinity : second) || a.localeCompare(b);
-    });
+    .sort((a, b) => a === "home.html" ? -1 : b === "home.html" ? 1 : a.localeCompare(b));
 
   const pages = files.map((file) => {
     const slug = path.parse(file).name;
@@ -24,8 +19,6 @@ export async function loadPages(root) {
       slug,
       route: slug === "home" ? "/" : `/${slug}/`,
       title,
-      nav: metadata[slug]?.nav ?? title,
-      description: metadata[slug]?.description ?? "",
     };
   });
 
