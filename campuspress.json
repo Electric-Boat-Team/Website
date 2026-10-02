@@ -1,6 +1,11 @@
 {
   "baseUrl": "https://blog.umd.edu/electricboat",
   "pageMetadata": {
+    "test-iframe": {
+      "title": "Iframe Test",
+      "nav": "Iframe Test",
+      "description": "Throwaway test page for iframe embed verification."
+    },
     "home": {
       "title": "Home",
       "nav": "Home",
