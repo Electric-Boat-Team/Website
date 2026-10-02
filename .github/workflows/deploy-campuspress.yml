@@ -25,3 +25,17 @@ jobs:
           CAMPUSPRESS_USERNAME: ${{ secrets.CAMPUSPRESS_USERNAME }}
           CAMPUSPRESS_APP_PASSWORD: ${{ secrets.CAMPUSPRESS_APP_PASSWORD }}
         run: npm run deploy:wp
+
+  media-setup:
+    if: ${{ github.ref == 'refs/heads/setup/campuspress-media-layout' && github.actor == 'Victor-Casado' && github.triggering_actor == 'Victor-Casado' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Upload approved media and set full-width drafts
+        env:
+          CAMPUSPRESS_USERNAME: ${{ secrets.CAMPUSPRESS_USERNAME }}
+          CAMPUSPRESS_APP_PASSWORD: ${{ secrets.CAMPUSPRESS_APP_PASSWORD }}
+        run: node scripts/setup-campuspress-media.mjs
