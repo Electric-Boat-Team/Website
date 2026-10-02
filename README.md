@@ -2,6 +2,36 @@
 
 Content and build for the team website.
 
+## Experimental Independent Site (`no-campuspress`)
+
+This branch builds a standalone marine-engineering fieldbook rather than fetching the CampusPress theme. `npm run build` runs `scripts/build-independent.mjs`, copies `standalone/index.html`, `styles.css`, and `script.js` into `dist/`, and copies `public/independent/` into `dist/assets/`. The build makes no network requests and leaves the existing Wrangler configuration serving `dist/` unchanged. The CampusPress scripts and content are retained but are not used by this build. The CampusPress documentation below describes the original workflow, not this branch's default build.
+
+The preview includes `noindex, nofollow`. Its social image URL points to `https://no-campuspress-website.vcasado.workers.dev/assets/workshop.jpg`; update that metadata before publishing at a different address. Google Fonts supplies Manrope and Newsreader at runtime, with system font fallbacks if unavailable. All page content and images are local and remain readable without JavaScript. JavaScript adds a mobile menu and a desktop-only sticky engineering image stage; reduced-motion preferences disable its transitions and image movement.
+
+Required assets in `public/independent/`:
+
+| File | Source / subject |
+| --- | --- |
+| `logo.png` | Official team logo |
+| `workshop.jpg` | IMG_9444, team around the white boat |
+| `workshop-detail.jpg` | IMG_9445, closer workshop view |
+| `team.jpg` | Whiteboard group photograph |
+| `hull.jpg` | Catamaran refurbishment |
+| `rudder.jpg` | Rudder assembly |
+| `foil.jpg` | White foil components on a workbench |
+| `bow.jpg` | Boat bow detail |
+
+Asset provenance: [provided team Drive folder](https://drive.google.com/drive/u/0/folders/1_S-kUNB81nEOsZ3k1AI9-FXeU9Zkqt-x). Keep those filenames when preparing the supplied photographs. The builder validates all required inputs before replacing `dist/` and reports missing files explicitly.
+
+```bash
+node --check standalone/script.js
+node --check scripts/build-independent.mjs
+npm run build
+npm run preview
+```
+
+Edit the independent page in `standalone/`. Image references use `assets/<filename>` relative to the page. Engineering descriptions are current design inputs, not achieved performance or race results. Sponsorship tiers are Bronze $1,500, Silver $3,000, Program $6,000, and Autonomy $8,500; no sponsor names or tier benefits are implied. Joining uses the team's actual interest form. Sponsorship inquiries link to the official team website rather than publishing internal contact information.
+
 ## Live
 
 - Production: https://website.vcasado.workers.dev
