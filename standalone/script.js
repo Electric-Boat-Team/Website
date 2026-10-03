@@ -34,37 +34,37 @@ const hero = document.querySelector('.hero');
 const stories = [...document.querySelectorAll('.engineering-story')];
 const clamp = value => Math.max(0, Math.min(1, value));
 
-// Each chapter owns its photo and text; native scrolling moves both together.
-for (const story of stories) {
-  const panel = document.createElement('div');
-  panel.className = 'story-panel';
-  panel.append(...story.childNodes);
-  story.append(panel);
-}
+const stage = document.querySelector('.engineering-stage');
+const frames = [...document.querySelectorAll('.stage-frame')];
+let activeIndex = -1;
 document.documentElement.classList.add('scroll-ready', 'motion-ready');
 
 let pending = false;
 function renderScroll() {
   pending = false;
-  const height = innerHeight;
   if (hero) {
     const bounds = hero.getBoundingClientRect();
     const progress = clamp(-bounds.top / bounds.height);
     hero.style.setProperty('--hero-pan', reducedMotion.matches ? '0px' : `${-progress * 32}px`);
     hero.style.setProperty('--hero-scale', reducedMotion.matches ? '1' : `${1.04 + progress * .06}`);
   }
-  for (const story of stories) {
-    const bounds = story.getBoundingClientRect();
-    const panel = story.querySelector('.story-panel');
-    const pinTop = Math.max(40, (height - panel.offsetHeight) / 2);
-    const travel = Math.max(1, bounds.height - panel.offsetHeight - 96);
-    const progress = clamp((pinTop - bounds.top) / travel);
-    const entrance = clamp((height - bounds.top) / (height * .65));
-    story.style.setProperty('--panel-top', `${pinTop}px`);
-    story.style.setProperty('--reading-progress', `${progress}`);
-    story.style.setProperty('--photo-inset', reducedMotion.matches ? '0%' : `${(1 - entrance) * 8}%`);
-    story.style.setProperty('--photo-pan', reducedMotion.matches || !desktop.matches ? '0px' : `${(progress - .5) * -24}px`);
-    story.style.setProperty('--copy-rise', reducedMotion.matches ? '0px' : `${(1 - entrance) * 24}px`);
+  if (stage && desktop.matches) {
+    const stageBounds = stage.getBoundingClientRect();
+    const readingLine = stageBounds.top + stageBounds.height / 2;
+    let closest = Infinity;
+    let index = 0;
+    stories.forEach((story, i) => {
+      const copy = story.querySelector('.story-copy').getBoundingClientRect();
+      const distance = Math.abs(copy.top + copy.height / 2 - readingLine);
+      if (distance < closest) { closest = distance; index = i; }
+    });
+    if (index !== activeIndex) {
+      frames.forEach((frame, i) => {
+        frame.classList.toggle('is-active', i === index);
+        frame.setAttribute('aria-hidden', String(i !== index));
+      });
+      activeIndex = index;
+    }
   }
 }
 function scheduleScroll() {
