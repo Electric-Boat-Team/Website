@@ -7,7 +7,7 @@ const source = path.join(root, 'standalone');
 const assets = path.join(root, 'public/independent');
 const destination = path.join(root, 'dist');
 const pages = ['index.html', 'styles.css', 'script.js'];
-const images = ['logo.png', 'workshop.jpg', 'workshop-detail.jpg', 'team.jpg', 'hull.jpg', 'rudder.jpg', 'foil.jpg', 'bow.jpg'];
+const images = ['logo.png', 'workshop.jpg', 'workshop-detail.jpg', 'boat.jpg', 'mount.jpg', 'foil-detail.jpg'];
 
 // Validate inputs before replacing a previously successful build.
 const required = [...pages.map(file => path.join(source, file)), ...images.map(file => path.join(assets, file))];
@@ -28,5 +28,8 @@ await mkdir(destination, { recursive: true });
 for (const file of pages) {
   await cp(path.join(source, file), path.join(destination, file));
 }
-await cp(assets, path.join(destination, 'assets'), { recursive: true });
+await mkdir(path.join(destination, 'assets'), { recursive: true });
+for (const file of images) {
+  await cp(path.join(assets, file), path.join(destination, 'assets', file));
+}
 console.log('Built independent site in dist/ (no network requests).');
