@@ -38,8 +38,9 @@ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width:
 .site-header nav .nav-join { display: flex; align-items: center; gap: 20px; margin-left: 22px; border-bottom: 1px solid #bdd3dc; }
 .menu-toggle { display: none; border: 0; background: none; padding: 10px 0; color: white; }
 .hero { max-width: none; position: relative; isolation: isolate; overflow: hidden; min-height: min(800px, 90svh); padding-top: 88px; padding-bottom: 88px; display: flex; align-items: center; background: var(--navy); color: white; }
-.hero-copy { position: relative; z-index: 2; padding: 20px 0; max-width: 680px; }
-h1 { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(88px, 10vw, 156px); line-height: .98; font-weight: 600; letter-spacing: -.025em; }
+.hero-copy { position: relative; z-index: 2; padding: 20px 0; max-width: 900px; }
+h1 { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(72px, 8vw, 128px); line-height: 1.02; font-weight: 600; letter-spacing: -.025em; }
+h1 > span { display: block; white-space: nowrap; }
 .hero-copy > p { margin-top: 32px; max-width: 410px; font-size: 16px; line-height: 1.8; color: #e1edf1; }
 .text-link { display: inline-flex; gap: 28px; align-items: center; font-size: 14px; font-weight: 700; text-decoration: none; padding-bottom: 8px; border-bottom: 1px solid var(--navy); }
 .hero-copy .text-link { margin-top: 30px; border-color: #8eb7c8; }
@@ -63,6 +64,8 @@ h2 { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(44px, 5vw, 76
 [data-system="boat"] .inline-engineering-photo img { aspect-ratio: 960 / 723; max-width: 960px; }
 figcaption { font-size: 11px; line-height: 1.6; color: var(--grey); }
 .inline-engineering-photo figcaption { margin-top: 12px; }
+.scroll-ready .inline-engineering-photo img { clip-path: inset(var(--photo-inset, 0%) 0); }
+.scroll-ready .story-copy { transform: translateY(var(--copy-rise, 0px)); }
 .story-copy { max-width: 450px; }
 h3 { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(38px, 3.8vw, 56px); font-weight: 500; line-height: 1.08; letter-spacing: -.02em; }
 .story-copy > p { font-size: 15px; line-height: 1.9; color: var(--grey); margin-top: 24px; }
@@ -95,7 +98,7 @@ h3 { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(38px, 3.8vw, 
   .scroll-ready .engineering-story { display: block; min-height: 110svh; }
   .story-panel { position: sticky; top: var(--panel-top, 48px); display: grid; grid-template-columns: 1.18fr 1fr; align-items: center; gap: clamp(40px, 7vw, 112px); }
   .story-panel::after { content: ''; position: absolute; left: 0; right: 0; bottom: -24px; height: 3px; background: var(--deck); transform: scaleX(var(--reading-progress, 0)); transform-origin: left; }
-  .story-panel .inline-engineering-photo img { max-height: calc(100svh - 160px); object-fit: contain; }
+  .story-panel .inline-engineering-photo img { max-height: calc(100svh - 160px); object-fit: contain; transform: translateY(var(--photo-pan, 0px)); }
 }
 @media (max-width: 1100px) {
   .site-header nav { gap: 24px; }
@@ -122,7 +125,7 @@ h3 { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(38px, 3.8vw, 
   .site-header nav .nav-join { margin-left: auto; gap: 10px; }
   .hero { display: flex; min-height: 640px; padding-top: 60px; padding-bottom: 60px; }
   .hero-copy { padding: 12px 0 32px; }
-  h1 { font-size: clamp(74px, 14vw, 104px); }
+  h1 { font-size: clamp(44px, 12vw, 86px); }
   .hero-copy > p { font-size: 14px; margin-top: 26px; max-width: 440px; }
   .hero-copy .text-link { margin-top: 22px; }
   .hero-photo img { object-position: 62% 60%; }
@@ -159,13 +162,15 @@ h3 { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(38px, 3.8vw, 
 }
 @media (max-width: 380px) {
   .site-header nav .nav-join { margin-left: 0; }
-  h1 { font-size: 70px; }
+  h1 { font-size: 12vw; }
   .tier-price { font-size: 34px; }
   .competition-strip { font-size: 11px; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .motion-ready .hero-photo img { transform: none; }
+  .scroll-ready .inline-engineering-photo img { transform: none; clip-path: none; }
+  .scroll-ready .story-copy { transform: none; }
 }
 @media (min-width: 761px) and (max-width: 999px) {
   .story-panel { display: grid; grid-template-columns: 1.18fr 1fr; align-items: center; gap: 40px; }
