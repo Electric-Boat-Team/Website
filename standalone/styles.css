@@ -92,6 +92,10 @@ h3 { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(38px, 3.8vw, 
   .engineering-story { padding: 48px 0; }
   .engineering-story + .engineering-story { border-top: 1px solid var(--rule); }
   .story-copy { border-left: 2px solid var(--deck); padding-left: 24px; }
+  .scroll-ready .engineering-story { display: block; min-height: 110svh; }
+  .story-panel { position: sticky; top: var(--panel-top, 48px); display: grid; grid-template-columns: 1.18fr 1fr; align-items: center; gap: clamp(40px, 7vw, 112px); }
+  .story-panel::after { content: ''; position: absolute; left: 0; right: 0; bottom: -24px; height: 3px; background: var(--deck); transform: scaleX(var(--reading-progress, 0)); transform-origin: left; }
+  .story-panel .inline-engineering-photo img { max-height: calc(100svh - 160px); object-fit: contain; }
 }
 @media (max-width: 1100px) {
   .site-header nav { gap: 24px; }
@@ -132,6 +136,7 @@ h3 { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(38px, 3.8vw, 
   .section-heading > p { max-width: 100%; margin-top: 18px; font-size: 13px; }
   h2 { font-size: 38px; }
   .engineering-story { display: flex; flex-direction: column; align-items: stretch; gap: 24px; padding: 20px 0 44px; }
+  .story-panel { display: flex; flex-direction: column; gap: 24px; }
   h3 { font-size: 34px; }
   .story-copy { max-width: 100%; }
   .story-copy > p { font-size: 14px; margin-top: 18px; }
@@ -161,4 +166,8 @@ h3 { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(38px, 3.8vw, 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .motion-ready .hero-photo img { transform: none; }
+}
+@media (min-width: 761px) and (max-width: 999px) {
+  .story-panel { display: grid; grid-template-columns: 1.18fr 1fr; align-items: center; gap: 40px; }
+  .scroll-ready .engineering-story { display: block; }
 }

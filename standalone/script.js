@@ -32,9 +32,18 @@ if (menuButton && navigation) {
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const hero = document.querySelector('.hero');
+const stories = [...document.querySelectorAll('.engineering-story')];
+const desktop = window.matchMedia('(min-width: 1000px)');
 
 if (hero && 'IntersectionObserver' in window) {
   document.documentElement.classList.add('motion-ready');
+  for (const story of stories) {
+    const panel = document.createElement('div');
+    panel.className = 'story-panel';
+    panel.append(...story.childNodes);
+    story.append(panel);
+  }
+  document.documentElement.classList.add('scroll-ready');
   let scheduled = false;
   const visible = new Set();
 
@@ -45,6 +54,16 @@ if (hero && 'IntersectionObserver' in window) {
       const progress = Math.max(0, Math.min(1, -bounds.top / bounds.height));
       hero.style.setProperty('--hero-pan', reducedMotion.matches ? '0px' : `${-progress * 10}px`);
       hero.style.setProperty('--hero-scale', reducedMotion.matches ? '1' : String(1.025 + progress * 0.025));
+    }
+    for (const story of stories) {
+      if (!visible.has(story)) continue;
+      const bounds = story.getBoundingClientRect();
+      const panel = story.querySelector('.story-panel');
+      const pinTop = Math.max(48, (window.innerHeight - panel.offsetHeight) / 2);
+      story.style.setProperty('--panel-top', `${pinTop}px`);
+      const travel = Math.max(1, bounds.height - panel.offsetHeight - 96);
+      const progress = Math.max(0, Math.min(1, (pinTop - bounds.top) / travel));
+      story.style.setProperty('--reading-progress', String(progress));
     }
   };
 
@@ -62,10 +81,12 @@ if (hero && 'IntersectionObserver' in window) {
     schedule();
   }, { rootMargin: '80px' });
   if (hero) observer.observe(hero);
+  stories.forEach(story => observer.observe(story));
   window.addEventListener('scroll', () => {
     if (visible.size) schedule();
   }, { passive: true });
   window.addEventListener('resize', schedule, { passive: true });
+  desktop.addEventListener('change', schedule);
   reducedMotion.addEventListener('change', schedule);
   schedule();
 }
