@@ -41,7 +41,8 @@ for (const plan of plans) {
   const matchesSource = hash(source) === hash(draft.content.raw);
   const targets = plan.liveId ? [await request(`pages/${plan.liveId}?context=edit`)] : await request(`pages?context=edit&status=any&slug=${plan.slug}`);
   if (targets.length > 1) throw new Error(`Ambiguous publication target for ${plan.slug}`);
-  if (plan.liveId && (targets[0].status !== 'publish' || (plan.slug === 'home' ? new URL(targets[0].link).pathname !== '/' : targets[0].slug !== plan.slug))) {
+  console.log('Live target:', JSON.stringify(targets.map(page => ({ id: page.id, status: page.status, slug: page.slug, link: page.link }))));
+  if (plan.liveId && (targets[0].status !== 'publish' || (plan.slug === 'home' ? !['/', `${new URL(base).pathname.replace(/\/$/, '')}/`].includes(new URL(targets[0].link).pathname) : targets[0].slug !== plan.slug))) {
     throw new Error(`Unexpected live page for ${plan.slug}`);
   }
   if (!plan.liveId && targets.length) throw new Error(`Clean slug already exists: ${plan.slug}; inspect before writing`);
