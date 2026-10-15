@@ -7,6 +7,10 @@ on:
         description: 'Publish the approved CampusPress drafts (publication branch only)'
         type: boolean
         default: false
+      refresh_public:
+        description: 'Refresh already-published pages through the mapped public domain'
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -30,6 +34,7 @@ jobs:
           CAMPUSPRESS_USERNAME: ${{ secrets.CAMPUSPRESS_USERNAME }}
           CAMPUSPRESS_APP_PASSWORD: ${{ secrets.CAMPUSPRESS_APP_PASSWORD }}
           PUBLISH_APPROVED: ${{ inputs.publish_approved }}
+          REFRESH_PUBLIC: ${{ inputs.refresh_public }}
         run: node scripts/publish-campuspress.mjs
       - uses: actions/upload-artifact@v4
         if: always()

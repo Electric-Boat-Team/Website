@@ -1,7 +1,8 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 
-const base = (process.env.CAMPUSPRESS_BASE_URL || 'https://blog.umd.edu/electricboat').replace(/\/+$/, '');
+const refresh = process.env.REFRESH_PUBLIC === 'true';
+const base = (refresh ? 'https://electricboat.umd.edu' : process.env.CAMPUSPRESS_BASE_URL || 'https://blog.umd.edu/electricboat').replace(/\/+$/, '');
 const { CAMPUSPRESS_USERNAME: username, CAMPUSPRESS_APP_PASSWORD: password } = process.env;
 if (!username || !password) throw new Error('CampusPress credentials are required');
 const auth = 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64');
@@ -31,6 +32,25 @@ async function request(route, body) {
 await mkdir('publication-backup', { recursive: true });
 const backup = { base, mode: publish ? 'publish' : 'inspect', created: new Date().toISOString(), pages: [], changes: [] };
 const save = () => writeFile('publication-backup/state.json', JSON.stringify(backup, null, 2));
+if (refresh) {
+  for (const plan of plans) {
+    const id = plan.liveId || plan.draftId;
+    const page = await request(`pages/${id}?context=edit`);
+    if (page.status !== 'publish' || hash(page.content.raw) !== plan.approvedHash) throw new Error(`Published content changed: ${plan.slug}`);
+    backup.pages.push(page);
+    await save();
+    // Saving through the mapped host lets host-specific caches see the update.
+    await request(`pages/${id}`, { content: page.content.raw });
+    console.log(`Refreshed published ${plan.slug} through public domain`);
+  }
+  const menu = await request('menus/3?context=edit');
+  backup.menu = menu;
+  await save();
+  if (!menu.locations.includes('primary')) throw new Error('Unexpected primary menu');
+  await request('menus/3', { locations: ['primary'] });
+  console.log('Refreshed public primary menu.');
+  process.exit(0);
+}
 for (const plan of plans) {
   const matches = await request(`pages?context=edit&status=any&slug=draft-${plan.slug}`);
   if (matches.length !== 1 || matches[0].slug !== `draft-${plan.slug}` || matches[0].status !== 'draft') {
