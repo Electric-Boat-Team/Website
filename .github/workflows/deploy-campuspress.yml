@@ -2,6 +2,11 @@ name: Deploy to CampusPress
 
 on:
   workflow_dispatch:
+    inputs:
+      publish_approved:
+        description: 'Publish the approved CampusPress drafts (publication branch only)'
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -11,6 +16,28 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  publish-approved:
+    if: ${{ github.ref == 'refs/heads/publish-campuspress-approved' && github.actor == 'Victor-Casado' && github.triggering_actor == 'Victor-Casado' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Inspect or publish approved drafts
+        env:
+          CAMPUSPRESS_BASE_URL: ${{ vars.CAMPUSPRESS_BASE_URL }}
+          CAMPUSPRESS_USERNAME: ${{ secrets.CAMPUSPRESS_USERNAME }}
+          CAMPUSPRESS_APP_PASSWORD: ${{ secrets.CAMPUSPRESS_APP_PASSWORD }}
+          PUBLISH_APPROVED: ${{ inputs.publish_approved }}
+        run: node scripts/publish-campuspress.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: campuspress-publication-backup
+          path: publication-backup/
+          retention-days: 30
+
   upload-images:
     if: ${{ github.ref == 'refs/heads/feat/team-content-update' && github.actor == 'Victor-Casado' }}
     runs-on: ubuntu-latest
