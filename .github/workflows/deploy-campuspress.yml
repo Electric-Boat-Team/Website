@@ -11,6 +11,10 @@ on:
         description: 'Refresh already-published pages through the mapped public domain'
         type: boolean
         default: false
+      correct_advisor:
+        description: 'Correct Brian Palmer listing to Advisor only'
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -35,6 +39,7 @@ jobs:
           CAMPUSPRESS_APP_PASSWORD: ${{ secrets.CAMPUSPRESS_APP_PASSWORD }}
           PUBLISH_APPROVED: ${{ inputs.publish_approved }}
           REFRESH_PUBLIC: ${{ inputs.refresh_public }}
+          CORRECT_ADVISOR: ${{ inputs.correct_advisor }}
         run: node scripts/publish-campuspress.mjs
       - uses: actions/upload-artifact@v4
         if: always()

@@ -2,7 +2,8 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 
 const refresh = process.env.REFRESH_PUBLIC === 'true';
-const base = (refresh ? 'https://electricboat.umd.edu' : process.env.CAMPUSPRESS_BASE_URL || 'https://blog.umd.edu/electricboat').replace(/\/+$/, '');
+const correctAdvisor = process.env.CORRECT_ADVISOR === 'true';
+const base = (refresh || correctAdvisor ? 'https://electricboat.umd.edu' : process.env.CAMPUSPRESS_BASE_URL || 'https://blog.umd.edu/electricboat').replace(/\/+$/, '');
 const { CAMPUSPRESS_USERNAME: username, CAMPUSPRESS_APP_PASSWORD: password } = process.env;
 if (!username || !password) throw new Error('CampusPress credentials are required');
 const auth = 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64');
@@ -32,6 +33,20 @@ async function request(route, body) {
 await mkdir('publication-backup', { recursive: true });
 const backup = { base, mode: publish ? 'publish' : 'inspect', created: new Date().toISOString(), pages: [], changes: [] };
 const save = () => writeFile('publication-backup/state.json', JSON.stringify(backup, null, 2));
+if (correctAdvisor) {
+  const page = await request('pages/58?context=edit');
+  if (page.status !== 'publish' || page.slug !== 'team-overview' || hash(page.content.raw) !== plans[2].approvedHash) throw new Error('Team page changed; inspect before correcting');
+  backup.pages.push(page);
+  await save();
+  const claim = '<p style="color:#475569;font-size:15.2px;line-height:1.65;margin:0">Director of Terrapin Works, Makerspace Manager. Past PEP competitor with Washington College.</p>\n';
+  if (!page.content.raw.includes(claim) || !page.content.raw.includes('>Faculty Advisor</p>')) throw new Error('Expected advisor listing not found');
+  const content = page.content.raw.replace(claim, '').replace('>Faculty Advisor</p>', '>Advisor</p>');
+  await request('pages/58', { content });
+  const result = await request('pages/58?context=edit');
+  if (result.content.raw !== content || result.status !== 'publish') throw new Error('Advisor correction did not persist exactly');
+  console.log('Brian Palmer now listed as Advisor only. Other page content unchanged.');
+  process.exit(0);
+}
 if (refresh) {
   for (const plan of plans) {
     const id = plan.liveId || plan.draftId;
