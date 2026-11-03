@@ -1,0 +1,29 @@
+name: Publish live CampusPress pages
+on:
+  workflow_dispatch:
+    inputs:
+      pages:
+        description: 'Comma-separated page names (home, about, join-the-team, sponsors, team-overview)'
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: campuspress-deploy
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: ${{ github.ref == 'refs/heads/main' && github.actor == 'Victor-Casado' && github.triggering_actor == 'Victor-Casado' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Update selected live pages
+        env:
+          CAMPUSPRESS_BASE_URL: ${{ vars.CAMPUSPRESS_BASE_URL }}
+          CAMPUSPRESS_USERNAME: ${{ secrets.CAMPUSPRESS_USERNAME }}
+          CAMPUSPRESS_APP_PASSWORD: ${{ secrets.CAMPUSPRESS_APP_PASSWORD }}
+          CAMPUSPRESS_PAGES: ${{ inputs.pages }}
+        run: node scripts/publish-campuspress.mjs
