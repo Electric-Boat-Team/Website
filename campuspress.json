@@ -1,11 +1,14 @@
 {
   "baseUrl": "https://blog.umd.edu/electricboat",
   "pageMetadata": {
-    "join-the-team": {
-      "title": "Join the Team"
-    },
-    "team-overview": {
-      "title": "Team"
-    }
+    "join-the-team": { "title": "Join the Team" },
+    "team-overview": { "title": "Team" }
+  },
+  "livePages": {
+    "home": { "id": 8, "slug": "clean-power-belongs-on-the-water-and-the-next-generation-of-marine-innovators-is-building-it-here" },
+    "about": { "id": 60, "slug": "about" },
+    "join-the-team": { "id": 28, "slug": "join-the-team" },
+    "sponsors": { "id": 59, "slug": "sponsors" },
+    "team-overview": { "id": 58, "slug": "team-overview" }
   }
 }
