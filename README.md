@@ -75,3 +75,35 @@ npm run preview    # build and serve dist/ locally
 `wrangler preview` needs the empty `[previews]` block in `wrangler.toml` and `wrangler >= 4.135.0` (pinned in `package.json`).
 
 **CampusPress:** The legacy scripts remain in the repository for reference, but their GitHub Actions workflows have been removed. The standalone site does not use CampusPress.
+
+## Upload to UMD static hosting
+
+You need access to the `webhosting-static-electricboat` SIMS group and a UMD directory account. Ask the site administrator to add you if needed. Connect to the UMD VPN first when off campus. These commands work in PowerShell with Git, Node.js 20 or later, and the Windows OpenSSH SFTP client installed.
+
+Clone the repository once, then build the current `main` branch:
+
+```powershell
+git clone https://github.com/Electric-Boat-Team/Website.git
+cd Website
+git switch main
+git pull --ff-only origin main
+npm run build
+cd dist
+sftp YOUR_DIRECTORY_ID@sftp.it-prod-webhosting.aws.umd.edu
+```
+
+For later updates, start in the existing `Website` folder and run the commands from `git switch main` onward. Replace `YOUR_DIRECTORY_ID` with your UMD directory ID and complete the sign-in prompts. At the `sftp>` prompt, upload the built files:
+
+```text
+cd electricboat
+put index.html
+put styles.css
+put script.js
+mkdir assets
+put assets/* assets/
+ls
+ls assets
+exit
+```
+
+If `assets` already exists, `mkdir assets` may report an error; continue with the next command. The SFTP account must have write access to the `electricboat` folder. Verify the result at https://electricboat.it-prod-webhosting.aws.umd.edu/ before asking UMD IT to point the public domain to the static site. Uploading files does not change the domain. These commands replace files with matching names but do not remove old files from the server.
