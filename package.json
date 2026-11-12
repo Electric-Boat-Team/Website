@@ -8,7 +8,7 @@
     "node": ">=20"
   },
   "scripts": {
-    "build": "node scripts/build-site.mjs",
+    "build": "node scripts/build-independent.mjs",
     "test": "node --test",
     "deploy:wp": "node scripts/deploy-campuspress.mjs",
     "deploy:wp:dry": "node scripts/deploy-campuspress.mjs --dry-run",
