@@ -6,7 +6,7 @@ Content and build for the team website.
 
 This branch builds a standalone site about the UFO conversion for PEP East 2027 rather than fetching the CampusPress theme. `npm run build` runs `scripts/build-independent.mjs`, copies `standalone/index.html`, `styles.css`, and `script.js` into `dist/`, and copies only its explicit image allowlist from `public/independent/` into `dist/assets/`. Unused source images are not shipped. The build makes no network requests and leaves the existing Wrangler configuration serving `dist/` unchanged. The CampusPress scripts and content are retained but are not used by this build. The CampusPress documentation below describes the original workflow, not this branch's default build.
 
-The preview includes `noindex, nofollow`. Its social image URL points to `https://no-campuspress-website.vcasado.workers.dev/assets/workshop-detail.jpg`; update that metadata before publishing at a different address. Google Fonts supplies Manrope and Barlow Condensed at runtime, with system font fallbacks if unavailable. All page content and images are local and remain readable without JavaScript. On desktop, one sticky photograph area changes as its matching description scrolls through the center of the viewport. Mobile and no-JavaScript views show each photo beside or above its own text. JavaScript also adds a mobile menu and a subtle scroll-linked hero pan. Reduced-motion preferences disable the hero movement and photo transitions.
+The page allows search indexing, and its social image URL points to `https://electricboat.umd.edu/assets/workshop-detail.jpg`. The image will be available there after the production domain points to the static site. Google Fonts supplies Manrope and Barlow Condensed at runtime, with system font fallbacks if unavailable. All page content and images are local and remain readable without JavaScript. On desktop, one sticky photograph area changes as its matching description scrolls through the center of the viewport. Mobile and no-JavaScript views show each photo beside or above its own text. JavaScript also adds a mobile menu and a subtle scroll-linked hero pan. Reduced-motion preferences disable the hero movement and photo transitions.
 
 Required assets in `public/independent/`:
 
@@ -30,7 +30,7 @@ npm run preview
 
 Edit the independent page in `standalone/`. Image references use `assets/<filename>` relative to the page. The story follows the UFO, the planned motor leg through the mast socket, and the independently retained stock foil system. Cooling, cabling, and clearance are under study; the page makes no measured performance or race-result claims. The unrelated outdoor catamaran restoration and whiteboard photographs remain in the source directory but are not emitted.
 
-Engineering provenance: the provided Drive document **Systems for UFO hydrofoil conversion - PEP2027**. Competition dates, location, and Maryland's crewed displacement listing are from [ASNE's PEP page](https://www.navalengineers.org/Education/Promoting-Electric-Propulsion-PEP): PEP East, Portsmouth, Virginia, April 13-16, 2027. Recheck the organizer's schedule before publication. Sponsorship prices and benefits come from `content/sponsors.html`: Bronze $1,500 (boat and website name), Silver $3,000 (apparel logo), Program $6,000 (decal and regatta hospitality), Autonomy $8,500 (autonomy-suite naming), with cumulative benefits. The Autonomy sponsorship level is not a claim of entry into the autonomy racing division. Joining uses the team's actual interest form. Sponsorship inquiries link to the official team website rather than publishing internal contact information.
+Engineering provenance: the provided Drive document **Systems for UFO hydrofoil conversion - PEP2027**. Competition dates, location, and Maryland's crewed displacement listing are from [ASNE's PEP page](https://www.navalengineers.org/Education/Promoting-Electric-Propulsion-PEP): PEP East, Portsmouth, Virginia, April 13-16, 2027. Recheck the organizer's schedule before publication. Sponsorship prices and benefits come from `content/sponsors.html`: Bronze $1,500 (boat and website name), Silver $3,000 (apparel logo), Program $6,000 (decal and regatta hospitality), Autonomy $8,500 (autonomy-suite naming), with cumulative benefits. The Autonomy sponsorship level is not a claim of entry into the autonomy racing division. Joining uses the team's actual interest form. Sponsorship inquiries link directly to the team email address.
 
 ## Live
 
@@ -74,13 +74,4 @@ npm run preview    # build and serve dist/ locally
 
 `wrangler preview` needs the empty `[previews]` block in `wrangler.toml` and `wrangler >= 4.135.0` (pinned in `package.json`).
 
-**CampusPress** is manual-only. After the workflow is on `main`, Victor-Casado can open the repo's **Actions → Deploy to CampusPress → Run workflow**, select `main`, and run it. The workflow skips the deploy job for other users' dispatches or reruns. GitHub does not hide the Run workflow button from other collaborators with write access.
-
-```bash
-npm run deploy:wp        # push content to WordPress
-npm run deploy:wp:dry    # dry run, no requests
-```
-
-It uses the `baseUrl` in `campuspress.json` (or an optional `CAMPUSPRESS_BASE_URL` repository variable) and the `CAMPUSPRESS_USERNAME` / `CAMPUSPRESS_APP_PASSWORD` repository secrets. For each HTML fragment it finds or creates a draft with slug `draft-<slug>`. It refuses non-drafts or ambiguous slug matches at lookup time. Existing drafts get content-only updates; new drafts get the derived title and slug. It does not publish pages. Use `npm run deploy:wp:dry` to list the slugs without writing to WordPress.
-
-The draft check and update are separate WordPress API requests. If someone publishes a draft between them, the update could change its newly published content. Avoid publishing these placeholder pages while a manual sync is running; this is not an atomic draft-only guarantee.
+**CampusPress:** The legacy scripts remain in the repository for reference, but their GitHub Actions workflows have been removed. The standalone site does not use CampusPress.
