@@ -1,34 +1,5 @@
-const menuButton = document.querySelector('.menu-toggle');
-const navigation = document.querySelector('#navigation');
-const mobile = matchMedia('(max-width: 760px)');
 const desktop = matchMedia('(min-width: 1000px)');
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
-
-if (menuButton && navigation) {
-  document.documentElement.classList.add('menu-ready');
-  menuButton.hidden = false;
-  const closeMenu = () => {
-    navigation.classList.remove('is-open');
-    menuButton.setAttribute('aria-expanded', 'false');
-    menuButton.querySelector('span').textContent = '+';
-  };
-  menuButton.addEventListener('click', () => {
-    const open = menuButton.getAttribute('aria-expanded') !== 'true';
-    navigation.classList.toggle('is-open', open);
-    menuButton.setAttribute('aria-expanded', String(open));
-    menuButton.querySelector('span').textContent = open ? '-' : '+';
-  });
-  navigation.addEventListener('click', event => {
-    if (event.target.closest('a') && mobile.matches) closeMenu();
-  });
-  document.addEventListener('keydown', event => {
-    if (event.key === 'Escape' && menuButton.getAttribute('aria-expanded') === 'true') {
-      closeMenu();
-      menuButton.focus();
-    }
-  });
-  mobile.addEventListener('change', closeMenu);
-}
 
 const hero = document.querySelector('.hero');
 const stories = [...document.querySelectorAll('.engineering-story')];
