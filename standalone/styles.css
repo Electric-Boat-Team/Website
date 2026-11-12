@@ -60,8 +60,8 @@ h3 { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(38px, 3.8vw, 
 .header-contact { color: white; font-size: 14px; font-weight: 700; text-decoration: none; border-bottom: 1px solid #bdd3dc; padding: 10px 0; }
 .header-contact:hover { text-decoration: underline; }
 .team-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
-.button-secondary { background: transparent; border: 1px solid var(--navy); color: var(--navy); }
-.button-secondary:hover { background: var(--navy); color: white; }
+.button.button-secondary { background: transparent; border: 1px solid var(--navy); color: var(--navy); }
+.button.button-secondary:hover { background: var(--navy); color: white; }
 .team-section { background: var(--blue); display: grid; grid-template-columns: 1.2fr 1fr; gap: clamp(40px, 7vw, 112px); align-items: center; padding-top: 64px; padding-bottom: 64px; }
 .team-photo img { aspect-ratio: 1.5; object-fit: cover; object-position: center 62%; }
 .team-copy h2 { font-size: clamp(48px, 5.3vw, 78px); }
