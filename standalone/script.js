@@ -11,11 +11,22 @@ const storyPanel = document.querySelector('.engineering-stories');
 const frames = [...document.querySelectorAll('.stage-frame')];
 let activeIndex = -1;
 let heroProgress = -1;
+let mobileStage = false;
+let inlineReading = false;
+const headings = stories.map(story => story.querySelector('h3'));
+const chapterTarget = () => headings.find(heading => `#${heading.id}` === location.hash);
+
+function updateChapterVisibility() {
+  stories.forEach((story, index) => {
+    if (mobileStage && index !== activeIndex) story.setAttribute('hidden', 'until-found');
+    else story.removeAttribute('hidden');
+  });
+}
 
 let pending = false;
 function renderScroll() {
   pending = false;
-  if (!desktopMotion.matches && !mobileMotion.matches) return;
+  if (!desktopMotion.matches && !mobileStage) return;
   if (hero && desktopMotion.matches) {
     const bounds = hero.getBoundingClientRect();
     const progress = clamp(-bounds.top / bounds.height);
@@ -26,7 +37,7 @@ function renderScroll() {
     }
   }
   let index = 0;
-  if (mobileMotion.matches) {
+  if (mobileStage) {
     const bounds = layout.getBoundingClientRect();
     const chapter = Math.max(1, bounds.height - storyPanel.offsetHeight) / stories.length;
     const position = -bounds.top;
@@ -50,20 +61,47 @@ function renderScroll() {
     stories.forEach((story, i) => story.classList.toggle('is-current', i === index));
     storyPanel.dataset.active = stories[index].dataset.system;
     activeIndex = index;
+    updateChapterVisibility();
   }
 }
 function scheduleScroll() {
-  if (pending || (!desktopMotion.matches && !mobileMotion.matches)) return;
+  if (pending || (!desktopMotion.matches && !mobileStage)) return;
   pending = true;
   requestAnimationFrame(renderScroll);
 }
 function updateScrollMode() {
-  document.documentElement.classList.toggle('scroll-ready', desktopMotion.matches || mobileMotion.matches);
-  scheduleScroll();
+  const root = document.documentElement;
+  mobileStage = mobileMotion.matches && 'onbeforematch' in root && !inlineReading && !chapterTarget();
+  stories.forEach(story => story.removeAttribute('hidden'));
+  root.classList.toggle('scroll-ready', desktopMotion.matches || mobileStage);
+  // Measure with all three chapters in the grid so even the longest one fits.
+  if (mobileStage && storyPanel.offsetHeight > innerHeight) {
+    mobileStage = false;
+    root.classList.remove('scroll-ready');
+  }
+  renderScroll();
+  updateChapterVisibility();
 }
 addEventListener('scroll', scheduleScroll, { passive: true });
-addEventListener('resize', scheduleScroll, { passive: true });
+addEventListener('resize', updateScrollMode, { passive: true });
+addEventListener('hashchange', () => {
+  const target = chapterTarget();
+  updateScrollMode();
+  if (target && mobileMotion.matches) {
+    requestAnimationFrame(() => target.scrollIntoView({ behavior: 'instant' }));
+  }
+});
+storyPanel.addEventListener('beforematch', () => {
+  if (!chapterTarget()) inlineReading = true;
+  updateScrollMode();
+});
+new ResizeObserver(() => {
+  if (!mobileStage || storyPanel.offsetHeight <= innerHeight) return;
+  const current = headings[activeIndex];
+  updateScrollMode();
+  if (!mobileStage) current?.scrollIntoView({ behavior: 'instant' });
+}).observe(storyPanel);
 desktopMotion.addEventListener('change', updateScrollMode);
 mobileMotion.addEventListener('change', updateScrollMode);
-document.fonts?.ready.then(scheduleScroll);
+document.fonts?.ready.then(updateScrollMode);
 updateScrollMode();
