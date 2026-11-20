@@ -147,6 +147,8 @@ h3 { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(38px, 3.8vw, 
     pointer-events: none;
   }
   .scroll-ready .engineering-story.is-current { opacity: 1; pointer-events: auto; }
+  /* Keep findable hidden chapters in the sticky grid instead of display: none. */
+  .scroll-ready .engineering-story[hidden="until-found"] { display: flex !important; }
   .scroll-ready .inline-engineering-photo img {
     height: min(34svh, 62vw, 320px);
     border-radius: 6px;
