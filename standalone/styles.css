@@ -56,7 +56,6 @@ h2 { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(44px, 5vw, 76
 .stage-photos { position: relative; height: 100%; }
 .stage-frame { position: absolute; inset: 0; display: grid; align-items: center; opacity: 0; visibility: hidden; transition: opacity 220ms ease, visibility 0s linear 220ms; }
 .stage-frame.is-active { opacity: 1; visibility: visible; transition-delay: 0s; }
-.scroll-ready .inline-engineering-photo { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 .story-copy { max-width: 450px; }
 h3 { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(38px, 3.8vw, 56px); font-weight: 500; line-height: 1.08; letter-spacing: -.02em; }
 .story-copy > p { font-size: 15px; line-height: 1.9; color: var(--grey); margin-top: 24px; }
@@ -80,6 +79,7 @@ h3 { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(38px, 3.8vw, 
   .scroll-ready .engineering-stage { display: block; position: sticky; top: max(32px, calc((100svh - min(540px, 70svh)) / 2)); height: min(540px, 70svh); }
   .stage-frame img { height: 100%; max-height: calc(100% - 32px); object-fit: contain; }
   .scroll-ready .engineering-story { display: flex; align-items: center; min-height: clamp(380px, 68svh, 640px); padding: 48px 0; border: 0; }
+  .scroll-ready .inline-engineering-photo { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 }
 @media (max-width: 1100px) {
   .hero { column-gap: 32px; }
@@ -110,11 +110,12 @@ h3 { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(38px, 3.8vw, 
   .work-section { padding-top: 40px; padding-bottom: 36px; }
   .section-heading { display: block; margin-bottom: 20px; }
   h2 { font-size: 38px; }
-  .engineering-story { display: flex; flex-direction: column; align-items: stretch; gap: 20px; padding: 0; }
+  .engineering-story { display: flex; flex-direction: column; align-items: stretch; gap: 14px; padding: 0; }
   .engineering-story + .engineering-story { border-top: 1px solid var(--rule); margin-top: 28px; padding-top: 28px; }
   h3 { font-size: 34px; }
-  .story-copy { max-width: 100%; border-left: 2px solid var(--deck); padding-left: 16px; }
-  .story-copy > p { font-size: 15px; line-height: 1.7; margin-top: 12px; }
+  .story-copy { display: contents; }
+  .story-copy > h3 { order: -1; }
+  .story-copy > p { font-size: 15px; line-height: 1.65; margin: 0; }
   .team-section { display: flex; flex-direction: column; align-items: stretch; gap: 30px; padding-top: 32px; padding-bottom: 40px; }
   .team-photo img { aspect-ratio: 1.2; }
   .team-copy h2 { font-size: 54px; }
@@ -123,28 +124,44 @@ h3 { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(38px, 3.8vw, 
   .team-actions .button { justify-content: space-between; gap: 12px; }
 }
 @media (max-width: 760px) and (min-height: 540px) {
-  .scroll-ready .section-heading { margin-bottom: 12px; }
-  .scroll-ready .engineering-stage {
-    display: block;
+  .scroll-ready .engineering-layout {
+    --panel-height: min(82svh, 640px);
+    --chapter-travel: clamp(210px, 42svh, 340px);
+    min-height: calc(var(--panel-height) + 3 * var(--chapter-travel));
+  }
+  .scroll-ready .engineering-stories {
+    display: grid;
+    align-content: center;
+    gap: 18px;
     position: sticky;
     top: 0;
-    z-index: 3;
-    margin-inline: calc(-1 * var(--gutter));
-    padding: 10px var(--gutter) 10px;
-    background: var(--paper);
+    min-height: var(--panel-height);
+    padding-block: 20px;
   }
-  .stage-photos { height: min(34svh, 56vw, 280px); overflow: hidden; border-radius: 6px; background: var(--navy); }
-  .stage-frame img { height: 100%; object-fit: cover; }
-  .stage-frame[data-stage="boat"] img { object-position: center 56%; }
-  .stage-progress { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-top: 9px; }
+  .scroll-ready .engineering-story {
+    grid-area: 1 / 1;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .scroll-ready .engineering-story.is-current { opacity: 1; pointer-events: auto; animation: chapter-enter 180ms ease-out; }
+  .scroll-ready .inline-engineering-photo img {
+    height: min(34svh, 62vw, 320px);
+    border-radius: 6px;
+    object-fit: cover;
+  }
+  .scroll-ready [data-system="boat"] .inline-engineering-photo img { object-position: center 56%; }
+  .scroll-ready .stage-progress { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
   .stage-progress span { height: 3px; border-radius: 2px; background: var(--rule); }
   [data-active="boat"] .stage-progress span:nth-child(1),
   [data-active="mount"] .stage-progress span:nth-child(2),
   [data-active="foil"] .stage-progress span:nth-child(3) { background: var(--deck); }
-  .scroll-ready .engineering-story { min-height: clamp(212px, 32svh, 290px); padding-block: 16px 28px; }
-  .scroll-ready .engineering-story + .engineering-story { margin-top: 0; }
-  .scroll-ready .engineering-story:last-child { min-height: 0; padding-bottom: 32px; }
-  .scroll-ready .engineering-story:not(.is-current) .story-copy { border-color: var(--rule); }
+}
+@keyframes chapter-enter {
+  from { opacity: .72; }
+  to { opacity: 1; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

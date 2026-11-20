@@ -6,6 +6,8 @@ const stories = [...document.querySelectorAll('.engineering-story')];
 const clamp = value => Math.max(0, Math.min(1, value));
 
 const stage = document.querySelector('.engineering-stage');
+const layout = document.querySelector('.engineering-layout');
+const storyPanel = document.querySelector('.engineering-stories');
 const frames = [...document.querySelectorAll('.stage-frame')];
 let activeIndex = -1;
 let heroProgress = -1;
@@ -23,30 +25,27 @@ function renderScroll() {
       heroProgress = progress;
     }
   }
-  if (stage) {
+  let index = 0;
+  if (mobileMotion.matches) {
+    // Give each chapter an equal share of the scroll while the panel is pinned.
+    const bounds = layout.getBoundingClientRect();
+    const travel = Math.max(1, bounds.height - storyPanel.offsetHeight);
+    index = Math.min(stories.length - 1, Math.floor(clamp(-bounds.top / travel) * stories.length));
+  } else {
     const stageBounds = stage.getBoundingClientRect();
-    let index = 0;
-    if (mobileMotion.matches) {
-      // Swap just before the next heading enters the reading area below the image.
-      const readingLine = stageBounds.bottom + 36;
-      stories.forEach((story, i) => {
-        if (story.querySelector('h3').getBoundingClientRect().top <= readingLine) index = i;
-      });
-    } else {
-      const readingLine = stageBounds.top + stageBounds.height / 2;
-      let closest = Infinity;
-      stories.forEach((story, i) => {
-        const bounds = story.getBoundingClientRect();
-        const distance = Math.abs(bounds.top + bounds.height / 2 - readingLine);
-        if (distance < closest) { closest = distance; index = i; }
-      });
-    }
-    if (index !== activeIndex) {
-      frames.forEach((frame, i) => frame.classList.toggle('is-active', i === index));
-      stories.forEach((story, i) => story.classList.toggle('is-current', i === index));
-      stage.dataset.active = stories[index].dataset.system;
-      activeIndex = index;
-    }
+    const readingLine = stageBounds.top + stageBounds.height / 2;
+    let closest = Infinity;
+    stories.forEach((story, i) => {
+      const bounds = story.getBoundingClientRect();
+      const distance = Math.abs(bounds.top + bounds.height / 2 - readingLine);
+      if (distance < closest) { closest = distance; index = i; }
+    });
+  }
+  if (index !== activeIndex) {
+    frames.forEach((frame, i) => frame.classList.toggle('is-active', i === index));
+    stories.forEach((story, i) => story.classList.toggle('is-current', i === index));
+    storyPanel.dataset.active = stories[index].dataset.system;
+    activeIndex = index;
   }
 }
 function scheduleScroll() {
