@@ -27,10 +27,14 @@ function renderScroll() {
   }
   let index = 0;
   if (mobileMotion.matches) {
-    // Give each chapter an equal share of the scroll while the panel is pinned.
     const bounds = layout.getBoundingClientRect();
-    const travel = Math.max(1, bounds.height - storyPanel.offsetHeight);
-    index = Math.min(stories.length - 1, Math.floor(clamp(-bounds.top / travel) * stories.length));
+    const chapter = Math.max(1, bounds.height - storyPanel.offsetHeight) / stories.length;
+    const position = -bounds.top;
+    const buffer = Math.min(12, chapter / 4);
+    index = Math.max(0, activeIndex);
+    // Tiny reversals at a boundary should not swap the whole panel back and forth.
+    while (index < stories.length - 1 && position >= (index + 1) * chapter + buffer) index++;
+    while (index > 0 && position < index * chapter - buffer) index--;
   } else {
     const stageBounds = stage.getBoundingClientRect();
     const readingLine = stageBounds.top + stageBounds.height / 2;
