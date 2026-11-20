@@ -146,7 +146,7 @@ h3 { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(38px, 3.8vw, 
     opacity: 0;
     pointer-events: none;
   }
-  .scroll-ready .engineering-story.is-current { opacity: 1; pointer-events: auto; animation: chapter-enter 180ms ease-out; }
+  .scroll-ready .engineering-story.is-current { opacity: 1; pointer-events: auto; }
   .scroll-ready .inline-engineering-photo img {
     height: min(34svh, 62vw, 320px);
     border-radius: 6px;
@@ -158,10 +158,6 @@ h3 { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(38px, 3.8vw, 
   [data-active="boat"] .stage-progress span:nth-child(1),
   [data-active="mount"] .stage-progress span:nth-child(2),
   [data-active="foil"] .stage-progress span:nth-child(3) { background: var(--deck); }
-}
-@keyframes chapter-enter {
-  from { opacity: .72; }
-  to { opacity: 1; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
