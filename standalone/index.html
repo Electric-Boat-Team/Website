@@ -38,10 +38,13 @@
     <section class="work-section section-shell" id="work" aria-labelledby="work-title">
       <div class="section-heading"><h2 id="work-title">The UFO conversion.</h2></div>
       <div class="engineering-layout">
-        <div class="engineering-stage" aria-label="UFO conversion photographs">
-          <figure class="stage-frame is-active" data-stage="boat"><img src="assets/boat.jpg" width="960" height="723" alt="The UFO catamaran before conversion."></figure>
-          <figure class="stage-frame" data-stage="mount"><img src="assets/mount.jpg" width="1800" height="1013" alt="Mast socket and adjacent front strut opening."></figure>
-          <figure class="stage-frame" data-stage="foil"><img src="assets/foil-detail.jpg" width="1800" height="1013" alt="Front strut cross-section."></figure>
+        <div class="engineering-stage" aria-hidden="true" data-active="boat">
+          <div class="stage-photos">
+            <figure class="stage-frame is-active" data-stage="boat"><img src="assets/boat.jpg" width="960" height="723" alt=""></figure>
+            <figure class="stage-frame" data-stage="mount"><img src="assets/mount.jpg" width="1800" height="1013" alt=""></figure>
+            <figure class="stage-frame" data-stage="foil"><img src="assets/foil-detail.jpg" width="1800" height="1013" alt=""></figure>
+          </div>
+          <div class="stage-progress"><span></span><span></span><span></span></div>
         </div>
         <div class="engineering-stories">
           <article class="engineering-story" data-system="boat" aria-labelledby="boat-title"><figure class="inline-engineering-photo"><img src="assets/boat.jpg" width="960" height="723" loading="lazy" alt="The complete white UFO catamaran on grass, with blue deck pads and detached foil components."></figure><div class="story-copy"><h3 id="boat-title">A sailing hull.<br>An electric conversion.</h3><p>Our starting point is a UFO carbon-composite catamaran. The conversion replaces sail propulsion with a motor leg while retaining the boat's stock foil system.</p></div></article>
