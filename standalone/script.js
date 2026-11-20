@@ -1,5 +1,4 @@
-const desktop = matchMedia('(min-width: 1000px)');
-const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+const desktopMotion = matchMedia('(min-width: 1000px) and (prefers-reduced-motion: no-preference)');
 
 const hero = document.querySelector('.hero');
 const stories = [...document.querySelectorAll('.engineering-story')];
@@ -8,25 +7,29 @@ const clamp = value => Math.max(0, Math.min(1, value));
 const stage = document.querySelector('.engineering-stage');
 const frames = [...document.querySelectorAll('.stage-frame')];
 let activeIndex = -1;
-document.documentElement.classList.add('scroll-ready', 'motion-ready');
+let heroProgress = -1;
 
 let pending = false;
 function renderScroll() {
   pending = false;
+  if (!desktopMotion.matches) return;
   if (hero) {
     const bounds = hero.getBoundingClientRect();
     const progress = clamp(-bounds.top / bounds.height);
-    hero.style.setProperty('--hero-pan', reducedMotion.matches ? '0px' : `${-progress * 32}px`);
-    hero.style.setProperty('--hero-scale', reducedMotion.matches ? '1' : `${1.04 + progress * .06}`);
+    if (progress !== heroProgress) {
+      hero.style.setProperty('--hero-pan', `${-progress * 32}px`);
+      hero.style.setProperty('--hero-scale', `${1.04 + progress * .06}`);
+      heroProgress = progress;
+    }
   }
-  if (stage && desktop.matches) {
+  if (stage) {
     const stageBounds = stage.getBoundingClientRect();
     const readingLine = stageBounds.top + stageBounds.height / 2;
     let closest = Infinity;
     let index = 0;
     stories.forEach((story, i) => {
-      const copy = story.querySelector('.story-copy').getBoundingClientRect();
-      const distance = Math.abs(copy.top + copy.height / 2 - readingLine);
+      const bounds = story.getBoundingClientRect();
+      const distance = Math.abs(bounds.top + bounds.height / 2 - readingLine);
       if (distance < closest) { closest = distance; index = i; }
     });
     if (index !== activeIndex) {
@@ -39,13 +42,16 @@ function renderScroll() {
   }
 }
 function scheduleScroll() {
-  if (pending) return;
+  if (pending || !desktopMotion.matches) return;
   pending = true;
   requestAnimationFrame(renderScroll);
 }
+function updateScrollMode() {
+  document.documentElement.classList.toggle('scroll-ready', desktopMotion.matches);
+  scheduleScroll();
+}
 addEventListener('scroll', scheduleScroll, { passive: true });
 addEventListener('resize', scheduleScroll, { passive: true });
-reducedMotion.addEventListener('change', scheduleScroll);
-desktop.addEventListener('change', scheduleScroll);
+desktopMotion.addEventListener('change', updateScrollMode);
 document.fonts?.ready.then(scheduleScroll);
-scheduleScroll();
+updateScrollMode();
