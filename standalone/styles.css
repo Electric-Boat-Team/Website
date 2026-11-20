@@ -40,7 +40,6 @@ h1 > span { display: block; white-space: nowrap; }
 .hero-photo { position: absolute; inset: 0; z-index: 0; background: var(--navy); overflow: hidden; }
 .hero-photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(9,30,42,.94) 0%, rgba(9,30,42,.82) 32%, rgba(9,30,42,.28) 65%, rgba(9,30,42,.08) 100%); }
 .hero-photo img { height: 100%; object-fit: cover; object-position: 65% 58%; }
-.scroll-ready .hero-photo img { transform: translateY(var(--hero-pan, 0px)) scale(var(--hero-scale, 1.04)); }
 .competition-strip { background: var(--blue); border-top: 3px solid var(--deck); padding-top: 24px; padding-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 20px; font-size: 12px; }
 .competition-strip p { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; }
 .competition-strip strong { font-weight: 800; }
@@ -53,7 +52,11 @@ h2 { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(44px, 5vw, 76
 .engineering-story { display: grid; grid-template-columns: 1.18fr 1fr; align-items: center; gap: clamp(40px, 7vw, 112px); padding: 32px 0; }
 .inline-engineering-photo img { height: auto; background: var(--blue); }
 [data-system="boat"] .inline-engineering-photo img { aspect-ratio: 960 / 723; max-width: 960px; }
-.engineering-stage { display: none; }
+.engineering-stage, .stage-progress { display: none; }
+.stage-photos { position: relative; height: 100%; }
+.stage-frame { position: absolute; inset: 0; display: grid; align-items: center; opacity: 0; visibility: hidden; transition: opacity 220ms ease, visibility 0s linear 220ms; }
+.stage-frame.is-active { opacity: 1; visibility: visible; transition-delay: 0s; }
+.scroll-ready .inline-engineering-photo { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 .story-copy { max-width: 450px; }
 h3 { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(38px, 3.8vw, 56px); font-weight: 500; line-height: 1.08; letter-spacing: -.02em; }
 .story-copy > p { font-size: 15px; line-height: 1.9; color: var(--grey); margin-top: 24px; }
@@ -69,16 +72,14 @@ h3 { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(38px, 3.8vw, 
 .button { display: inline-flex; align-items: center; justify-content: center; gap: 34px; background: var(--red); color: white; padding: 18px 24px; font-size: 14px; font-weight: 600; text-decoration: none; min-height: 54px; }
 .button:hover { background: #7e1d2a; }
 @media (min-width: 1000px) {
+  .scroll-ready .hero-photo img { transform: translateY(var(--hero-pan, 0px)) scale(var(--hero-scale, 1.04)); }
   .engineering-story { padding: 48px 0; }
   .engineering-story + .engineering-story { border-top: 1px solid var(--rule); }
   .story-copy { border-left: 2px solid var(--deck); padding-left: 24px; }
   .scroll-ready .engineering-layout { display: grid; grid-template-columns: 1.18fr 1fr; gap: clamp(40px, 7vw, 112px); align-items: start; }
   .scroll-ready .engineering-stage { display: block; position: sticky; top: max(32px, calc((100svh - min(540px, 70svh)) / 2)); height: min(540px, 70svh); }
-  .stage-frame { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; opacity: 0; visibility: hidden; transition: opacity 220ms ease, visibility 220ms; }
-  .stage-frame.is-active { opacity: 1; visibility: visible; }
-  .stage-frame img { height: auto; max-height: calc(100% - 32px); object-fit: contain; object-position: center; }
+  .stage-frame img { height: 100%; max-height: calc(100% - 32px); object-fit: contain; }
   .scroll-ready .engineering-story { display: flex; align-items: center; min-height: clamp(380px, 68svh, 640px); padding: 48px 0; border: 0; }
-  .scroll-ready .inline-engineering-photo { display: none; }
 }
 @media (max-width: 1100px) {
   .hero { column-gap: 32px; }
@@ -121,18 +122,29 @@ h3 { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(38px, 3.8vw, 
   .team-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); }
   .team-actions .button { justify-content: space-between; gap: 12px; }
 }
-@media (max-width: 760px) and (prefers-reduced-motion: no-preference) {
-  @supports (animation-timeline: view()) and (animation-range: entry 0% entry 85%) {
-    .inline-engineering-photo {
-      animation: photo-enter linear both;
-      animation-timeline: view();
-      animation-range: entry 0% entry 85%;
-    }
+@media (max-width: 760px) and (min-height: 540px) {
+  .scroll-ready .section-heading { margin-bottom: 12px; }
+  .scroll-ready .engineering-stage {
+    display: block;
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    margin-inline: calc(-1 * var(--gutter));
+    padding: 10px var(--gutter) 10px;
+    background: var(--paper);
   }
-}
-@keyframes photo-enter {
-  from { transform: translateY(10px); opacity: .8; }
-  to { transform: translateY(0); opacity: 1; }
+  .stage-photos { height: min(34svh, 56vw, 280px); overflow: hidden; border-radius: 6px; background: var(--navy); }
+  .stage-frame img { height: 100%; object-fit: cover; }
+  .stage-frame[data-stage="boat"] img { object-position: center 56%; }
+  .stage-progress { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-top: 9px; }
+  .stage-progress span { height: 3px; border-radius: 2px; background: var(--rule); }
+  [data-active="boat"] .stage-progress span:nth-child(1),
+  [data-active="mount"] .stage-progress span:nth-child(2),
+  [data-active="foil"] .stage-progress span:nth-child(3) { background: var(--deck); }
+  .scroll-ready .engineering-story { min-height: clamp(212px, 32svh, 290px); padding-block: 16px 28px; }
+  .scroll-ready .engineering-story + .engineering-story { margin-top: 0; }
+  .scroll-ready .engineering-story:last-child { min-height: 0; padding-bottom: 32px; }
+  .scroll-ready .engineering-story:not(.is-current) .story-copy { border-color: var(--rule); }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
